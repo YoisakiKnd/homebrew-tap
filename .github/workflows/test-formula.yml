@@ -1,0 +1,26 @@
+name: Test NakuruMusic formula
+
+on:
+  push:
+    paths:
+      - Formula/nakuru-music.rb
+      - .github/workflows/test-formula.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    runs-on: macos-latest
+    steps:
+      - name: Install from public tap
+        run: |
+          brew tap YoisakiKnd/tap
+          brew install YoisakiKnd/tap/nakuru-music
+          brew test YoisakiKnd/tap/nakuru-music
+          test -x "$(brew --prefix)/bin/nakuru-music"
+          if xattr -p com.apple.quarantine "$(brew --prefix)/bin/nakuru-music" >/dev/null 2>&1; then
+            echo "Installed executable is quarantined" >&2
+            exit 1
+          fi
