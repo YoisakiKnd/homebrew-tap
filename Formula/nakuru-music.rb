@@ -1,17 +1,17 @@
 class NakuruMusic < Formula
   desc "YouTube Music terminal client with built-in audio playback"
   homepage "https://github.com/YoisakiKnd/NakuruMusic"
-  version "0.2.1"
+  version "0.2.2"
   license "GPL-3.0-only"
 
   depends_on :macos
 
   if Hardware::CPU.arm?
-    url "https://github.com/YoisakiKnd/NakuruMusic/releases/download/v0.2.1/nakuru-music-v0.2.1-aarch64-apple-darwin.tar.gz"
-    sha256 "2f500ed5648faeb5ea6dcff4f0d932614add50a7c51e8b49864d27bff629c01c"
+    url "https://github.com/YoisakiKnd/NakuruMusic/releases/download/v0.2.2/nakuru-music-v0.2.2-aarch64-apple-darwin.tar.gz"
+    sha256 "df346fe7ad86bf247c59ff14280e4a355bf06f0244551797d924f432b1759e2b"
   else
-    url "https://github.com/YoisakiKnd/NakuruMusic/releases/download/v0.2.1/nakuru-music-v0.2.1-x86_64-apple-darwin.tar.gz"
-    sha256 "c9072ef611906aee60f30816ff0915f2dbb0d8b69e9d9fcbffabad65d0e33ea2"
+    url "https://github.com/YoisakiKnd/NakuruMusic/releases/download/v0.2.2/nakuru-music-v0.2.2-x86_64-apple-darwin.tar.gz"
+    sha256 "dcdd876b8dc5d097fd4e4620c440939e0aa9a1703e32b36230a060a5137d6c60"
   end
 
   def install
