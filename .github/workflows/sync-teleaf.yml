@@ -1,0 +1,45 @@
+name: Sync Teleaf release
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - scripts/sync-teleaf.py
+      - scripts/test-sync-teleaf.py
+      - .github/workflows/sync-teleaf.yml
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: homebrew-teleaf-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check sync validation
+        run: python3 scripts/test-sync-teleaf.py
+      - name: Verify the latest stable release and update the formula
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/sync-teleaf.py
+      - name: Commit and test updated formula
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Formula/teleaf.rb
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update Teleaf Homebrew formula'
+            git push origin HEAD
+            gh workflow run test-teleaf.yml --ref main
+          fi

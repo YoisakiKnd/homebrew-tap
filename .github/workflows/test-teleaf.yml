@@ -1,0 +1,34 @@
+name: Test Teleaf formula
+
+on:
+  push:
+    paths:
+      - Formula/teleaf.rb
+      - .github/workflows/test-teleaf.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-15-intel, ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_ANALYTICS: '1'
+    steps:
+      - name: Set up Homebrew and check out this tap commit
+        uses: Homebrew/actions/setup-homebrew@1f8e202ffddf94def7f42f6fa3a482e821489f9c
+        with:
+          stable: true
+      - name: Install and test the published package
+        run: |
+          brew info --json=v2 YoisakiKnd/tap/teleaf
+          brew install YoisakiKnd/tap/teleaf
+          brew test YoisakiKnd/tap/teleaf
+          test -x "$(brew --prefix)/bin/teleaf"
