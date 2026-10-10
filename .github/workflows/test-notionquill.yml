@@ -3,13 +3,15 @@ name: Test NotionQuill cask
 # 这份 cask 装不装得上，只有装了才知道 —— 所以每次改它就真在 macOS 上装一遍。
 # （NotionQuill 主仓库是在 Linux 上开发的，这边是唯一能验证 cask 和 .app 的地方。）
 #
-# 失败时会把检查的正文用 ::error:: 注解抛出来 —— 注解匿名可读，
-# 所以写这个 cask 的人（在 Linux 上）也看得到是哪一条不成立。
+# 读不到 job 日志的人（比如在 Linux 上维护这个 cask 的那个）靠两样东西看结果：
+# 步骤名（哪一步挂了）和注解（那一步说了什么）。所以每一段检查都把关键事实
+# 用 ::notice:: / ::error:: 抛出来。
 
 on:
   push:
     paths:
       - Casks/notionquill.rb
+      - scripts/check-cask.sh
       - .github/workflows/test-notionquill.yml
   workflow_dispatch:
 
@@ -28,63 +30,24 @@ jobs:
           brew install --cask YoisakiKnd/tap/notionquill
 
       - name: Where did the cask put the app
-        run: brew list --cask notionquill
+        run: |
+          OUT=$(brew list --cask notionquill)
+          printf '%s\n' "$OUT"
+          MSG=$(printf '%s' "$OUT" | awk '{printf "%s%%0A", $0}')
+          echo "::notice title=cask 装在哪::$MSG"
 
       - name: The installed app must match what the cask says
         run: |
           set -uo pipefail
-          OUT=$(bash -s <<'SCRIPT' 2>&1
-          set -euo pipefail
-
-          CASK_VERSION=$(ruby -e 'puts File.read("Casks/notionquill.rb")[/version "([^"]+)"/, 1]')
-          echo "cask 里写的版本：$CASK_VERSION"
-
-          # 装到哪儿去了问 brew，不假设 /Applications
-          APP=$(brew list --cask notionquill | grep -E '\.app$' | head -1 || true)
-          if [ -z "$APP" ]; then
-            echo "brew list 里没有 .app："
-            brew list --cask notionquill
-            exit 1
-          fi
-          echo "装上的是：$APP"
-
-          # 读 Info.plist 用 PlistBuddy：defaults 对「带 .plist 后缀的路径」这种
-          # domain 会说不存在，跟要查的字段没关系也照样失败
-          PLIST="$APP/Contents/Info.plist"
-          APP_VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$PLIST")
-          echo "Info.plist 里的版本：$APP_VERSION"
-          [ "$CASK_VERSION" = "$APP_VERSION" ] || { echo "版本和 cask 对不上"; exit 1; }
-
-          # 可执行文件的名字从 Info.plist 读，不写死 —— 起名权在那边
-          EXEC=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$PLIST")
-          BIN="$APP/Contents/MacOS/$EXEC"
-          if [ ! -x "$BIN" ]; then
-            echo "可执行文件不在：$BIN"
-            ls -la "$APP/Contents/MacOS"
-            exit 1
-          fi
-
-          # universal dmg：一个可执行文件里得同时有 arm64 和 x86_64，
-          # 否则 Intel 的机器装上了也起不来
-          file "$BIN"
-          ARCHS=$(lipo -archs "$BIN")
-          echo "架构：$ARCHS"
-          case "$ARCHS" in *arm64*) ;; *) echo "缺 arm64"; exit 1 ;; esac
-          case "$ARCHS" in *x86_64*) ;; *) echo "缺 x86_64"; exit 1 ;; esac
-
-          # 未签名：把实际情况打出来，但不作为通过条件（拦的是第一次打开，不是装）
-          echo -n "quarantine: "
-          xattr -p com.apple.quarantine "$APP" 2>/dev/null || echo "（没有这个属性）"
-          SCRIPT
-          )
-          rc=$?
+          OUT=$(bash scripts/check-cask.sh 2>&1) && rc=0 || rc=$?
           printf '%s\n' "$OUT"
+          # 注解里换行写成 %0A；用 awk 拼，别用 sed 的多行语法（BSD sed 不吃）
+          MSG=$(printf '%s' "$OUT" | tail -25 | awk '{printf "%s%%0A", $0}')
           if [ "$rc" -ne 0 ]; then
-            # 注解里换行要写成 %0A；用 awk 拼，别用 sed 的多行语法（BSD sed 不吃）
-            MSG=$(printf '%s' "$OUT" | tail -25 | awk '{printf "%s%%0A", $0}')
             echo "::error title=cask 检查没通过::$MSG"
             exit 1
           fi
+          echo "::notice title=cask 检查通过::$MSG"
 
       - name: Report what Homebrew recorded
         run: brew info --cask YoisakiKnd/tap/notionquill | head -20
