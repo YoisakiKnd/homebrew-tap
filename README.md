@@ -1,6 +1,6 @@
 # Yoisaki Homebrew tap
 
-This tap distributes prebuilt releases of [Teleaf](https://github.com/YoisakiKnd/teleaf) and [NakuruMusic](https://github.com/YoisakiKnd/NakuruMusic).
+This tap distributes prebuilt releases of [Teleaf](https://github.com/YoisakiKnd/teleaf), [NakuruMusic](https://github.com/YoisakiKnd/NakuruMusic) and [NotionQuill](https://github.com/YoisakiKnd/NotionQuill).
 
 ## Teleaf · macOS / Linux
 
@@ -27,3 +27,16 @@ nakuru-music
 ```
 
 Press `,` in the app to open Settings and switch to mpv if it is installed. The Formula installs the prebuilt release binary for Apple Silicon or Intel and verifies its SHA-256 checksum.
+
+## NotionQuill · macOS
+
+[NotionQuill](https://github.com/YoisakiKnd/NotionQuill) (轻羽) is a lightweight writing client that keeps article drafts in Notion and writes them back to the same page. It ships as a universal `.dmg`, so one download covers Apple Silicon and Intel.
+
+```sh
+brew tap YoisakiKnd/tap
+brew install --cask YoisakiKnd/tap/notionquill
+```
+
+Unlike Teleaf and NakuruMusic this one is a **cask**, not a formula: the app is a GUI bundle that comes out of a `.dmg` and goes into `/Applications`. It is unsigned and not notarised — Homebrew does not sign it for you — so the first launch is blocked by Gatekeeper: right-click the icon and choose **Open**, or allow it in System Settings → Privacy & Security.
+
+The cask is not synced automatically yet. When NotionQuill publishes a release, `version`, `url` and `sha256` in `Casks/notionquill.rb` are updated from that release's `SHA256SUMS`. The **Test NotionQuill cask** workflow installs the cask on macOS whenever that file changes.

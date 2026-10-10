@@ -1,0 +1,58 @@
+name: Test NotionQuill cask
+
+# 这份 cask 装不装得上，只有装了才知道 —— 所以每次改它就真在 macOS 上装一遍。
+# （NotionQuill 主仓库是在 Linux 上开发的，这边是唯一能验证 cask 和 .app 的地方。）
+
+on:
+  push:
+    paths:
+      - Casks/notionquill.rb
+      - .github/workflows/test-notionquill.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install from the public tap
+        run: |
+          brew tap YoisakiKnd/tap
+          brew install --cask YoisakiKnd/tap/notionquill
+
+      - name: The installed app must match what the cask says
+        run: |
+          set -euo pipefail
+
+          CASK_VERSION=$(ruby -e 'puts File.read("Casks/notionquill.rb")[/version "([^"]+)"/, 1]')
+          APP="/Applications/NotionQuill.app"
+          test -d "$APP" || { echo "cask 装完了却没有 $APP"; ls -la /Applications | head -20; exit 1; }
+
+          PLIST="$APP/Contents/Info.plist"
+          APP_VERSION=$(defaults read "$PLIST" CFBundleShortVersionString)
+          echo "cask 里写的是 $CASK_VERSION，装上的是 $APP_VERSION"
+          test "$CASK_VERSION" = "$APP_VERSION" || { echo "版本和 cask 对不上"; exit 1; }
+
+          # 可执行文件的名字从 Info.plist 读，不写死 —— 起名权在那边
+          EXEC=$(defaults read "$PLIST" CFBundleExecutable)
+          BIN="$APP/Contents/MacOS/$EXEC"
+          test -x "$BIN" || { echo "可执行文件不在：$BIN"; ls -la "$APP/Contents/MacOS"; exit 1; }
+
+          # universal dmg：一个可执行文件里得同时有 arm64 和 x86_64，
+          # 否则 Intel 的机器装上了也起不来
+          file "$BIN"
+          file "$BIN" | grep -q "universal binary" || { echo "这不是 universal 的产物"; exit 1; }
+          file "$BIN" | grep -q arm64 || { echo "缺 arm64"; exit 1; }
+          file "$BIN" | grep -q x86_64 || { echo "缺 x86_64"; exit 1; }
+
+          # 未签名：这里只是把实际情况打出来，不作为通过条件
+          # （Gatekeeper 拦的是第一次打开，不是装）
+          echo -n "quarantine: "
+          xattr -p com.apple.quarantine "$APP" 2>/dev/null || echo "（没有这个属性）"
+
+      - name: Report what Homebrew recorded
+        run: brew info --cask YoisakiKnd/tap/notionquill | head -20
