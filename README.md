@@ -30,7 +30,7 @@ Press `,` in the app to open Settings and switch to mpv if it is installed. The 
 
 ## NotionQuill · macOS
 
-[NotionQuill](https://github.com/YoisakiKnd/NotionQuill) (轻羽) is a lightweight writing client that keeps article drafts in Notion and writes them back to the same page. It ships as a universal `.dmg`, so one download covers Apple Silicon and Intel.
+[NotionQuill](https://github.com/YoisakiKnd/NotionQuill) (轻羽) is a thin shell around Notion's own web app: the window is ours, the page inside is Notion's, so every feature is present because none of them are reimplemented. What is left out is the outer layer — no bundled browser engine, no Node, no updater. It ships as a universal `.dmg`, so one download covers Apple Silicon and Intel.
 
 ```sh
 brew tap YoisakiKnd/tap
