@@ -2,8 +2,8 @@
 # 目前没有同步脚本：NotionQuill 发新版本时，这三行跟着改一次，
 # 校验和从 Release 里的 SHA256SUMS 抄（别手算，也别抄别人贴的）。
 cask "notionquill" do
-  version "0.2.0"
-  sha256 "344ad3d2a6a2c235df5f180433bf7564866fe4b0faf1a37b818973e3728b9d76"
+  version "0.2.1"
+  sha256 "c6411a28a2b1da9b65f62fa9b44d5a53889cf99b13321910e1a9c2d9c11b80cd"
 
   url "https://github.com/YoisakiKnd/NotionQuill/releases/download/v#{version}/NotionQuill_#{version}_universal.dmg",
       verified: "github.com/YoisakiKnd/NotionQuill/"
