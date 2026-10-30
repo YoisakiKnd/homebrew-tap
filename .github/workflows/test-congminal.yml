@@ -29,7 +29,7 @@ jobs:
       - name: Install the published cask
         run: |
           brew install --cask YoisakiKnd/tap/congminal
-      - name: Verify app, CLI, helper, version and signature
+      - name: Verify app, CLI link, helper, licenses, version and signature
         run: |
           set -euo pipefail
           app=/Applications/congminal.app
@@ -40,7 +40,14 @@ jobs:
             lipo "$app/Contents/MacOS/$bin" -verify_arch arm64 x86_64
           done
           expected=$(brew info --cask --json=v2 YoisakiKnd/tap/congminal | python3 -c 'import json,sys; print(json.load(sys.stdin)["casks"][0]["version"])')
-          test "$(congminal --version)" = "congminal $expected"
+          actual=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app/Contents/Info.plist")
+          test "$actual" = "$expected"
+          test "$(readlink "$(brew --prefix)/bin/congminal")" = "$app/Contents/MacOS/congminal-bin"
+          for license in LICENSE NOTICE LICENSE-libc.txt LICENSE-Terminus.txt; do
+            test -s "$app/Contents/Resources/$license"
+          done
+          grep -q 'GNU GENERAL PUBLIC LICENSE' "$app/Contents/Resources/LICENSE"
+          echo '::notice::First launch requires user approval for this non-notarized app; this job does not bypass Gatekeeper.'
           brew list --cask congminal
       - name: Verify uninstall removes only managed artifacts
         run: |
