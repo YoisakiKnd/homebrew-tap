@@ -35,6 +35,9 @@ jobs:
           app=/Applications/congminal.app
           test -x "$app/Contents/MacOS/congminal-bin"
           test -x "$app/Contents/MacOS/congminal-ssh-helper"
+          icon=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIconFile' "$app/Contents/Info.plist")
+          test "$icon" = congminal.icns
+          test -s "$app/Contents/Resources/$icon"
           codesign --verify --deep --strict "$app"
           for bin in congminal-bin congminal-ssh-helper; do
             lipo "$app/Contents/MacOS/$bin" -verify_arch arm64 x86_64
