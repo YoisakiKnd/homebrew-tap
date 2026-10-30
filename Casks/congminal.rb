@@ -1,6 +1,6 @@
 cask "congminal" do
-  version "0.2.0"
-  sha256 "71fc1862d94fc9f7c80cdad40497cdaa4464a3681be255c17e0e93572c76df88"
+  version "0.2.1"
+  sha256 "7cb884071aa2693494684a2e2ac4a03298c2a521a60d72099caf1a8d0f5104a3"
 
   url "https://github.com/YoisakiKnd/congminal/releases/download/v#{version}/congminal-#{version}-macos-universal.zip"
   name "congminal"
