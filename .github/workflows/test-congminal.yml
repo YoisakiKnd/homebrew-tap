@@ -1,0 +1,49 @@
+name: Test congminal cask
+
+on:
+  push:
+    paths:
+      - Casks/congminal.rb
+      - .github/workflows/test-congminal.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      HOMEBREW_NO_ANALYTICS: "1"
+    steps:
+      - name: Set up Homebrew and check out this tap commit
+        uses: Homebrew/actions/setup-homebrew@1f8e202ffddf94def7f42f6fa3a482e821489f9c
+        with:
+          stable: true
+      - name: Install the published cask
+        run: |
+          brew install --cask YoisakiKnd/tap/congminal
+      - name: Verify app, CLI, helper, version and signature
+        run: |
+          set -euo pipefail
+          app=/Applications/congminal.app
+          test -x "$app/Contents/MacOS/congminal-bin"
+          test -x "$app/Contents/MacOS/congminal-ssh-helper"
+          codesign --verify --deep --strict "$app"
+          for bin in congminal-bin congminal-ssh-helper; do
+            lipo "$app/Contents/MacOS/$bin" -verify_arch arm64 x86_64
+          done
+          expected=$(brew info --cask --json=v2 YoisakiKnd/tap/congminal | python3 -c 'import json,sys; print(json.load(sys.stdin)["casks"][0]["version"])')
+          test "$(congminal --version)" = "congminal $expected"
+          brew list --cask congminal
+      - name: Verify uninstall removes only managed artifacts
+        run: |
+          brew uninstall --cask congminal
+          test ! -e /Applications/congminal.app
+          test ! -L "$(brew --prefix)/bin/congminal"

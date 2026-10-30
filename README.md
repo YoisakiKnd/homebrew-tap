@@ -1,6 +1,6 @@
 # Yoisaki Homebrew tap
 
-This tap distributes prebuilt releases of [Teleaf](https://github.com/YoisakiKnd/teleaf), [NakuruMusic](https://github.com/YoisakiKnd/NakuruMusic) and [NotionQuill](https://github.com/YoisakiKnd/NotionQuill).
+This tap distributes prebuilt releases of [Teleaf](https://github.com/YoisakiKnd/teleaf), [NakuruMusic](https://github.com/YoisakiKnd/NakuruMusic), [NotionQuill](https://github.com/YoisakiKnd/NotionQuill), and [congminal](https://github.com/YoisakiKnd/congminal).
 
 ## Teleaf · macOS / Linux
 
@@ -40,3 +40,17 @@ brew install --cask YoisakiKnd/tap/notionquill
 Unlike Teleaf and NakuruMusic this one is a **cask**, not a formula: the app is a GUI bundle that comes out of a `.dmg` and goes into `/Applications`. It is unsigned and not notarised — Homebrew does not sign it for you — so the first launch is blocked by Gatekeeper: right-click the icon and choose **Open**, or allow it in System Settings → Privacy & Security.
 
 The cask is not synced automatically yet. When NotionQuill publishes a release, `version`, `url` and `sha256` in `Casks/notionquill.rb` are updated from that release's `SHA256SUMS`. The **Test NotionQuill cask** workflow installs the cask on macOS whenever that file changes.
+
+## congminal · macOS
+
+A native terminal emulator with tabs, split panes, SSH/SFTP, Git, monitoring, and notifications.
+
+```sh
+brew tap YoisakiKnd/tap
+brew install --cask YoisakiKnd/tap/congminal
+congminal --version
+```
+
+The universal app supports Apple Silicon and Intel on macOS 11+. The cask installs `congminal.app` and a `congminal` command, and retains the SFTP authentication helper inside the app. It installs the verified upstream release directly, without a Rust toolchain or extra runtime packages. SSH uses your system client; SFTP requires OpenSSH 8.7+ with askpass support. The app is ad-hoc signed but not notarized; if macOS blocks the first launch, allow it in System Settings → Privacy & Security.
+
+`brew upgrade --cask congminal` applies published cask updates. The livecheck block detects stable GitHub Releases; it does not automatically commit new versions. Maintainers update the cask version and SHA256 from the release's matching `.zip.sha256` file. The **Test congminal cask** workflow installs the cask on Apple Silicon and Intel, verifies both binaries, and tests the command and uninstall.
