@@ -2,8 +2,7 @@ cask "congminal" do
   version "0.1.0"
   sha256 "0ee8bfd97f5da260ec948260fe082a0dba59ed178eee9ea03598bc2c0d3c9290"
 
-  url "https://github.com/YoisakiKnd/congminal/releases/download/v#{version}/congminal-#{version}-macos-universal.zip",
-      verified: "github.com/YoisakiKnd/congminal/"
+  url "https://github.com/YoisakiKnd/congminal/releases/download/v#{version}/congminal-#{version}-macos-universal.zip"
   name "congminal"
   desc "Native terminal emulator with SSH, SFTP, Git, and monitoring"
   homepage "https://github.com/YoisakiKnd/congminal"
@@ -13,9 +12,9 @@ cask "congminal" do
     strategy :github_latest
   end
 
-  depends_on macos: ">= :big_sur"
+  depends_on macos: :big_sur
 
-  app "congminal.app"
+  app "congminal-#{version}-macos-universal/congminal.app"
   # Link the native binary; the Finder launcher resolves its own script directory.
   binary "#{appdir}/congminal.app/Contents/MacOS/congminal-bin", target: "congminal"
 
