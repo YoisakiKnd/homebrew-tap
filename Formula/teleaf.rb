@@ -3,26 +3,26 @@ class Teleaf < Formula
   desc "Lightweight Telegram terminal client with inline media and mouse controls"
   homepage "https://github.com/YoisakiKnd/teleaf"
   license "MIT"
-  version "0.3.3"
+  version "0.3.4"
   on_macos do
     depends_on macos: :sequoia
     on_arm do
-      url "https://github.com/YoisakiKnd/teleaf/releases/download/v0.3.3/teleaf-0.3.3-macos-aarch64.tar.gz"
-      sha256 "38a5417746634e019083ed8321b38517f34c4b60bfd76206093f36059fbd2145"
+      url "https://github.com/YoisakiKnd/teleaf/releases/download/v0.3.4/teleaf-0.3.4-macos-aarch64.tar.gz"
+      sha256 "238e1c9c32131866e6f297b0c35a9792021fadea2a7826732ea33ea131bf3735"
     end
     on_intel do
-      url "https://github.com/YoisakiKnd/teleaf/releases/download/v0.3.3/teleaf-0.3.3-macos-x86_64.tar.gz"
-      sha256 "cfddc233a041b49ab27a0976aa78caa0d19762f0c44a02d3d9791c459bee8ba2"
+      url "https://github.com/YoisakiKnd/teleaf/releases/download/v0.3.4/teleaf-0.3.4-macos-x86_64.tar.gz"
+      sha256 "7813fc24e210de96355ef742c43e3192aa994cb2bbd76d69fc33fb3e04a33676"
     end
   end
   on_linux do
     on_arm do
-      url "https://github.com/YoisakiKnd/teleaf/releases/download/v0.3.3/teleaf-0.3.3-linux-aarch64.tar.gz"
-      sha256 "04b14660ccb6fbae205544f589e6ea988b7330c4a53631e83978e30d00942631"
+      url "https://github.com/YoisakiKnd/teleaf/releases/download/v0.3.4/teleaf-0.3.4-linux-aarch64.tar.gz"
+      sha256 "4fa1f4bdb878cbea0bd4bb666ac1205005ab984581fc5c714b4d6a71262cded0"
     end
     on_intel do
-      url "https://github.com/YoisakiKnd/teleaf/releases/download/v0.3.3/teleaf-0.3.3-linux-x86_64.tar.gz"
-      sha256 "07266889da0360563b21a63aadb57bccd6213260eec61b0d4394c298528b519c"
+      url "https://github.com/YoisakiKnd/teleaf/releases/download/v0.3.4/teleaf-0.3.4-linux-x86_64.tar.gz"
+      sha256 "ae0082937dd09fe398bd5663281871518db151b913f50e04f02154c957350a39"
     end
   end
 
